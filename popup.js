@@ -6,32 +6,31 @@ const routines = {
     { time: "9:30 AM – 10:00 AM", activity: "Prep for job" },
     { time: "10:00 AM – 6:00 PM", activity: "Time job" },
     { time: "6:30 PM", activity: "Snacks" },
-    { time: "7:00 PM – 9:00 PM", activity: "Light course video review (3–4 videos max)" },
+    { time: "7:00 PM – 9:00 PM", activity: "Light course video review" },
     { time: "9:00 PM – 10:30 PM", activity: "Unwind / free time" },
-    { time: "10:30 PM", activity: "Start winding down (screen off, relax)" },
-    { time: "11:00 PM", activity: "Reading or journaling (non-digital)" },
-    { time: "11:30 PM", activity: "Dim lights, prepare room (cool, quiet, dark)" },
+    { time: "10:30 PM", activity: "Winding down" },
+    { time: "11:00 PM", activity: "Reading or journaling" },
+    { time: "11:30 PM", activity: "Dim lights" },
     { time: "12:00 AM", activity: "Sleep" },
   ],
   nonJob: [
-    { time: "07:00 AM – 07:30 AM", activity: "Wake up, hydrate, quick stretch or walk" },
-    { time: "07:30 AM - 09:00 AM", activity: "Course study session 1" },
-    { time: "9:30 AM", activity: "Break / light snack" },
+    { time: "07:00 AM", activity: "Wake up and stretch" },
+    { time: "07:30 AM", activity: "Course study session" },
+    { time: "09:30 AM", activity: "Break / snack" },
     { time: "10:00 AM", activity: "Course study session 2" },
-    { time: "11:00 AM – 12:30 PM", activity: "Deep work on course projects or code" },
-    { time: "12:30 PM", activity: "Lunch + short rest" },
-    { time: "1:30 PM – 3:30 PM", activity: "Focused coding or coursework" },
-    { time: "3:30 PM – 4:00 PM", activity: "Break / walk / light snack" },
-    { time: "4:00 PM – 5:30 PM", activity: "Optional coding session / revision" },
-    { time: "6:00 PM", activity: "Snacks" },
-    { time: "7:00 PM – 9:00 PM", activity: "Free time (gaming, hobby)" },
-    { time: "9:00 PM – 10:30 PM", activity: "Light review / prep next day" },
-    { time: "10:30 PM", activity: "Screen off or blue light filters" },
-    { time: "10:45 PM", activity: "Stretching or meditation" },
-    { time: "11:00 PM", activity: "Reading or journaling" },
-    { time: "11:30 PM", activity: "Dim lights, prepare room" },
-    { time: "12:00 AM", activity: "Sleep" },
-  ],
+    { time: "11:00 AM", activity: "Project or deep work" },
+    { time: "12:30 PM", activity: "Lunch + rest" },
+    { time: "01:30 PM", activity: "Focused coding" },
+    { time: "03:30 PM", activity: "Break / snack" },
+    { time: "04:00 PM", activity: "Optional revision" },
+    { time: "06:00 PM", activity: "Snacks" },
+    { time: "07:00 PM", activity: "Free time" },
+    { time: "09:00 PM", activity: "Review / prep" },
+    { time: "10:30 PM", activity: "Relax screen off" },
+    { time: "11:00 PM", activity: "Reading" },
+    { time: "11:30 PM", activity: "Prepare room" },
+    { time: "12:00 AM", activity: "Sleep" }
+  ]
 };
 
 const jobDays = ["Monday", "Thursday"];
@@ -70,18 +69,13 @@ function loadRoutine(day) {
   });
   routineTable.innerHTML = rows;
 
-  // Add event listeners
-  routineTable.querySelectorAll("input[type='checkbox']").forEach((checkbox) => {
+  routineTable.querySelectorAll("input[type=checkbox]").forEach(checkbox => {
     checkbox.addEventListener("change", (e) => {
-      const index = parseInt(e.target.dataset.index);
-      handleCheck(day, index, e.target.checked);
+      const idx = parseInt(e.target.dataset.index);
+      saveCheckboxState(day, idx, e.target.checked);
+      loadRoutine(day);
     });
   });
-}
-
-function handleCheck(day, index, checked) {
-  saveCheckboxState(day, index, checked);
-  loadRoutine(day);
 }
 
 function initDaySelect() {
@@ -103,10 +97,64 @@ function initDaySelect() {
   });
 }
 
-initDaySelect();
+// ---------- TODO LIST ----------
+function saveTodos(todos) {
+  localStorage.setItem("todos", JSON.stringify(todos));
+}
 
-document.getElementById("openFullPage")?.addEventListener("click", () => {
-  chrome.tabs.create({
-    url: chrome.runtime.getURL("index.html")
+function loadTodos() {
+  const list = document.getElementById("todoList");
+  const todos = JSON.parse(localStorage.getItem("todos")) || [];
+
+  list.innerHTML = "";
+  todos.forEach((todo, i) => {
+    const li = document.createElement("li");
+    li.className = "todo-item";
+    li.innerHTML = `
+      <input type="checkbox" ${todo.done ? "checked" : ""} data-index="${i}">
+      <span class="${todo.done ? "task-done" : ""}">${todo.text}</span>
+      <button class="deleteBtn" data-index="${i}">❌</button>
+    `;
+    list.appendChild(li);
   });
-});
+
+  list.querySelectorAll("input[type=checkbox]").forEach(cb => {
+    cb.addEventListener("change", (e) => {
+      const idx = parseInt(e.target.dataset.index);
+      todos[idx].done = e.target.checked;
+      saveTodos(todos);
+      loadTodos();
+    });
+  });
+
+  list.querySelectorAll(".deleteBtn").forEach(btn => {
+    btn.addEventListener("click", (e) => {
+      const idx = parseInt(e.target.dataset.index);
+      todos.splice(idx, 1);
+      saveTodos(todos);
+      loadTodos();
+    });
+  });
+}
+
+function setupTodoForm() {
+  const form = document.getElementById("todoForm");
+  const input = document.getElementById("todoInput");
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const value = input.value.trim();
+    if (!value) return;
+
+    const todos = JSON.parse(localStorage.getItem("todos")) || [];
+    todos.push({ text: value, done: false });
+    saveTodos(todos);
+    input.value = "";
+    loadTodos();
+  });
+}
+
+// Initialize everything
+initDaySelect();
+setupTodoForm();
+loadTodos();
