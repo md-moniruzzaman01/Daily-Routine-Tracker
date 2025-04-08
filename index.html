@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daily Routine Tracker</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        min-width: 300px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 10px;
+        text-align: left;
+      }
+      th {
+        background-color: #f5f5f5;
+      }
+      .task-done {
+        text-decoration: line-through;
+        color: gray;
+      }
+      #openFullPage {
+        padding: 10px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 10px;
+      }
+      #openFullPage:hover {
+        background-color: #45a049;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>🗓️ Daily Routine Tracker</h1>
+    <label for="daySelect">Select Day: </label>
+    <select id="daySelect"></select>
+
+    <h2>Today's Routine</h2>
+    <table id="routineTable">
+      <tr>
+        <th>Time</th>
+        <th>Activity</th>
+        <th>Done</th>
+      </tr>
+    </table>
+
+    <button id="openFullPage">🔍 Open Full Page View</button>
+
+    <script src="popup.js"></script>
+  </body>
+</html>
