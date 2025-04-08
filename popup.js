@@ -190,12 +190,12 @@ function initDaySelect() {
     select.size = days.length;
 
     select.addEventListener("change", function () {
-        const selectedDay = select.value;
-        loadCustomRoutine(selectedDay);
+        const selectedDays = Array.from(select.selectedOptions).map(option => option.value);
+        loadCustomRoutine(selectedDays.length === 1 ? selectedDays[0] : "multiple");
     });
 
     const today = new Date().toLocaleString("en-US", { weekday: "long" });
-    select.value = today;
+    select.value = today;  // Set today's day as default
     loadCustomRoutine(today);  // Load routine for today on page load
 }
 
