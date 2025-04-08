@@ -1,71 +1,81 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Daily Routine Tracker</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 20px;
-      min-width: 300px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 20px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 10px;
-      text-align: left;
-    }
-    th {
-      background-color: #f5f5f5;
-    }
-    .task-done {
-      text-decoration: line-through;
-      color: gray;
-    }
-    ul {
-      padding-left: 0;
-      list-style: none;
-    }
-    .todo-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 5px;
-    }
-    .todo-item span {
-      flex-grow: 1;
-    }
-    .deleteBtn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      color: red;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Routine Tracker</title>
+    <style>
+      body {
+          font-family: Arial, sans-serif;
+          margin: 20px;
+          min-width: 300px;
+      }
+      table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-bottom: 20px;
+      }
+      th, td {
+          border: 1px solid #ccc;
+          padding: 10px;
+          text-align: left;
+      }
+      th {
+          background-color: #f5f5f5;
+      }
+      .task-done {
+          text-decoration: line-through;
+          color: gray;
+      }
+      ul {
+          padding-left: 0;
+          list-style: none;
+      }
+      .todo-item {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+          margin-bottom: 5px;
+      }
+      .todo-item span {
+          flex-grow: 1;
+      }
+      .deleteBtn {
+          background: none;
+          border: none;
+          cursor: pointer;
+          color: red;
+      }
+      /* This hides the task row when the checkbox is checked */
+      .completeTask:checked {
+          display: none;
+      }
   </style>
+  
 </head>
 <body>
-  <h1>🗓️ Daily Routine Tracker</h1>
-  <label for="daySelect">Select Day: </label>
-  <select id="daySelect"></select>
+  <h1>📝 Custom Routine</h1>
 
- 
-  <h2>📝 To-Do List</h2>
-  <form id="todoForm">
-    <input type="text" id="todoInput" placeholder="Add a task..." required />
-    <button type="submit">Add</button>
+  <form id="customRoutineForm">
+      <label for="daySelect">Select Days: </label>
+      <select id="daySelect" multiple>
+          <!-- Days will be dynamically added -->
+      </select><br><br>
+
+      <input type="time" id="customTime" required />
+      <input type="text" id="customActivity" placeholder="Enter activity" required />
+      <button type="submit">Add Routine</button>
   </form>
-  <ul id="todoList"></ul>
-  <hr>
 
-  <h2>Today's Routine</h2>
-  <table id="routineTable"></table>
+  <h3>Daily Routine for <span id="selectedDay"></span></h3>
 
-
+  <table id="customRoutineTable">
+      <tr>
+          <th>Time</th>
+          <th>Activity</th>
+          <th>Actions</th>
+      </tr>
+  </table>
 
   <script src="popup.js"></script>
 </body>
