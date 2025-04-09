@@ -216,22 +216,21 @@ window.onload = function () {
 };
 
 
-function scheduleNotification(timeStr, activity) {
-    const [hours, minutes] = timeStr.split(":").map(Number);
+// Function to schedule notification for a routine
+function scheduleNotification(time, activity) {
     const now = new Date();
-    const triggerTime = new Date();
+    const [hour, minute] = time.split(":").map(Number);
+    const targetTime = new Date(now.setHours(hour, minute, 0, 0)); // Set target time
 
-    triggerTime.setHours(hours, minutes, 0, 0);
-
-    if (triggerTime < now) {
-        triggerTime.setDate(triggerTime.getDate() + 1); // Schedule for next day
+    // If the target time has already passed today, schedule for tomorrow
+    if (targetTime < Date.now()) {
+        targetTime.setDate(targetTime.getDate() + 1);
     }
 
-    const delayInMinutes = (triggerTime - now) / 60000;
-
+    // Send a message to the background script to schedule the alarm
     chrome.runtime.sendMessage({
         type: "scheduleAlarm",
-        delay: delayInMinutes,
-        activity
+        activity: activity,
+        targetDate: targetTime.toISOString(),
     });
 }
