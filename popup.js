@@ -28,7 +28,6 @@ function isDBReady() {
     return db !== undefined;
 }
 
-// Save custom routine to IndexedDB
 function saveCustomRoutine() {
     if (!isDBReady()) return;
 
@@ -40,7 +39,6 @@ function saveCustomRoutine() {
 
     if (!time || !activity || selectedDays.length === 0) return;
 
-    // Save routine for each selected day
     selectedDays.forEach(day => {
         const transaction = db.transaction([routineStoreName], "readwrite");
         const store = transaction.objectStore(routineStoreName);
@@ -50,7 +48,13 @@ function saveCustomRoutine() {
             const routine = request.result || { date: day, routineData: [] };
             routine.routineData.push({ time, activity, completed: false });
             store.put(routine);
-            loadCustomRoutine(day);  // Refresh the table for the selected day
+            loadCustomRoutine(day);
+
+            // Schedule notification for today's routines only
+            const today = new Date().toLocaleString("en-US", { weekday: "long" });
+            if (day === today) {
+                scheduleNotification(time, activity);
+            }
         };
     });
 }
@@ -210,3 +214,24 @@ window.onload = function () {
         };
     }
 };
+
+
+function scheduleNotification(timeStr, activity) {
+    const [hours, minutes] = timeStr.split(":").map(Number);
+    const now = new Date();
+    const triggerTime = new Date();
+
+    triggerTime.setHours(hours, minutes, 0, 0);
+
+    if (triggerTime < now) {
+        triggerTime.setDate(triggerTime.getDate() + 1); // Schedule for next day
+    }
+
+    const delayInMinutes = (triggerTime - now) / 60000;
+
+    chrome.runtime.sendMessage({
+        type: "scheduleAlarm",
+        delay: delayInMinutes,
+        activity
+    });
+}

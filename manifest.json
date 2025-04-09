@@ -8,8 +8,16 @@
   "background": {
     "service_worker": "background.js"
   },
-  "permissions": ["storage", "tabs","notifications"],
+"permissions": [
+  "alarms",
+  "notifications",
+  "storage"
+],
   "content_security_policy": {
     "extension_pages": "script-src 'self'; object-src 'self';"
-  }
+  },
+  "icons": {
+  "128": "icon128.png"
+}
+
 }
