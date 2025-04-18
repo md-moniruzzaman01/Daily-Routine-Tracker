@@ -234,3 +234,4 @@ function scheduleNotification(time, activity) {
         targetDate: targetTime.toISOString(),
     });
 }
+
